@@ -7,7 +7,7 @@ export class CreateTodoDto {
   @IsString()
   title: string;
 
-  @ApiProperty({ type: String, example: 1 })
+  @ApiProperty({ type: Number, example: 1 })
   @IsNotEmpty()
   userId: number;
 }

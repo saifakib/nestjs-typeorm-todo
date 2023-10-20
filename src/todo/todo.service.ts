@@ -1,5 +1,5 @@
 // src/todo/todo.service.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Todo } from './todo.entity';
@@ -16,15 +16,16 @@ export class TodoService {
     private readonly userRepository: Repository<User>,
   ) {}
 
+  // Create a new todo
   async create(createTodoDto: CreateTodoDto): Promise<Todo> {
     try {
       const { userId, title } = createTodoDto;
 
       // Find the user by ID
-      const user = await this.userRepository.findOne({ where: {id: userId }});
+      const user = await this.userRepository.findOne({ where: { id: userId }});
 
       if (!user) {
-        throw new Error('User not found');
+        throw new HttpException("User not found", HttpStatus.NOT_FOUND);
       }
 
       // Create a new Todo and associate it with the user
@@ -36,9 +37,9 @@ export class TodoService {
     } catch (err) {
       throw err;
     }
-    
   }
 
+  // Find all todos
   async findAll(page: number, limit: number): Promise<Todo[]> {
     try {
       const skip = (page - 1) * limit;
@@ -57,6 +58,7 @@ export class TodoService {
     }
   }
 
+  // Find single todo
   async findOne(id: number): Promise<Todo> {
     try {
       const todo = await this.todoRepository.findOne({
@@ -66,7 +68,7 @@ export class TodoService {
         },
       });
       if (!todo) {
-        throw new Error('Todo not found');
+        throw new HttpException("Todo not found", HttpStatus.NOT_FOUND);
       }
       return todo;
     } catch(err) {
@@ -74,6 +76,7 @@ export class TodoService {
     }
   }
 
+  // Update a todo
   async update(id: number, updateTodoDto: UpdateTodoDto): Promise<Todo> {
     try {
       const todo = await this.todoRepository.preload({
@@ -82,7 +85,7 @@ export class TodoService {
       });
     
       if (!todo) {
-        throw new Error('Todo not found');
+        throw new HttpException("Todo not found", HttpStatus.NOT_FOUND);
       }
 
       return await this.todoRepository.save(todo);
@@ -91,16 +94,16 @@ export class TodoService {
     }
   }
 
+  // Remove a todo
   async remove(id: number): Promise<void> {
     try {
       const todo = await this.findOne(id);
       if (!todo) {
-        throw new Error('Todo not found');
+        throw new HttpException("Todo not found", HttpStatus.NOT_FOUND);
       }
       await this.todoRepository.remove(todo);
     } catch (err) {
       throw new Error()
     }
-    
   }
 }
