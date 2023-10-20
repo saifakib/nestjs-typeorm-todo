@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  postgresdb:
+    image: postgres:latest
+    container_name: postgresdb
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=secret
+    ports:
+      - '5432:5432'
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    networks:
+      - node-network
+
+  node-app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: node-app
+    container_name: node-app
+    ports:
+      - '3000:3000'
+    depends_on:
+      - postgresdb
+    volumes:
+      - .:/usr/src/node-app
+    networks:
+      - node-network
+    env_file:
+      - ./.env
+
+volumes:
+  dbdata:
+    driver: local
+
+networks:
+  node-network:
+    driver: bridge
