@@ -10,6 +10,11 @@ COPY tsconfig.json ./
 
 # Install application dependencies
 RUN npm install
+
+COPY . .
+
+RUN npm run build
+ 
 EXPOSE 3000
 
 # Define the command to start your application
