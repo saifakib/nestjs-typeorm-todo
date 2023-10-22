@@ -1,29 +1,33 @@
 version: '3.9'
 services:
   db:
-    container_name: db
-    image: postgres:latest
+    image: postgres
     restart: always
     environment:
-      DB_TYPE: postgres
-      PG_USER: postgres
-      PG_PASSWORD: secret
-      PG_DB: postgres
-      PG_PORT: 5432
-      PG_HOST: localhost
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DATABASE=postgres
+    container_name: postgres
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
     ports:
       - '5432:5432'
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nest-docker-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DATABASE=postgres
+      - PORT=${PORT}
+    ports:
+      - '3000:3000'
+    depends_on:
+      - db
     volumes:
-      - dbdata:/var/lib/postgresql/data
-    networks:
-      - node-network
-
-volumes:
-  dbdata:
-    driver: local
-
-networks:
-  node-network:
-    driver: bridge
+      - ./src:/app/src
 
 

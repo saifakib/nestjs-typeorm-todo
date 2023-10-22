@@ -5,10 +5,4 @@ import { ApiOperation } from "@nestjs/swagger";
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
-
-  @Get()
-  @ApiOperation({ summary: 'Create a new Todo' })
-  getHello(): string {
-    return this.appService.getHello();
-  }
 }
