@@ -4,14 +4,12 @@ services:
     image: postgres
     restart: always
     environment:
-      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DATABASE=postgres
     container_name: postgres
     volumes:
       - ./pgdata:/var/lib/postgresql/data
     ports:
-      - '5432:5432'
+      - '5431:5432'
 
   app:
     build:
@@ -19,9 +17,6 @@ services:
       dockerfile: Dockerfile
     container_name: nest-docker-postgres
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DATABASE=postgres
       - PORT=${PORT}
     ports:
       - '3000:3000'
